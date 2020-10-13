@@ -20,4 +20,19 @@ const userSchema = mongoose.Schema({
     type: String,
     maxLength: 50
   },
+  role: {
+    //distinguish between an admin and a normal user
+    type: Number,
+    default: 0
+  },
+  token: {
+    type: String
+  },
+  tokenExp: {
+    type: Number
+  }
 })
+
+const User = mongoose.model('User', userSchema) //name of collection & schema
+
+module.exports = { User }

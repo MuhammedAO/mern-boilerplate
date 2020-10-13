@@ -1,33 +1,33 @@
 const express = require('express')
 const app = express()
-
 const mongoose = require('mongoose')
+const cookieParser = require('cookie-parser')
+const { User } = require('./models/User')
 
-mongoose.connect('mongodb+srv://mo:xxxx@cluster0.q9rcm.mongodb.net/<dbname>?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://mo:muhammed@cluster0.q9rcm.mongodb.net/<dbname>?retryWrites=true&w=majority', {
   useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('Db Connected'))
+  useUnifiedTopology: true,
+  useCreateIndex: true
+})
+  .then(() => console.log('Db Connected'))
   .catch((err) => console.log(err))
 
-// const mongooseUrl = 'mongodb+srv://mo:xxxx@cluster0.q9rcm.mongodb.net/<dbname>?retryWrites=true&w=majority'
+// body-parser extract the entire body portion of an incoming request stream and exposes it on req. body.
+//it is a piece of express middleware that reads a form's input and stores it as a javascript object accessible through req.body
+//to handle http post req, u need the body-parser middleware which is one part of express
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(cookieParser())
 
-// const dbConnect = async () => {
-//   try {
-//     const endPoint = await mongoose.connect(mongooseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-//     return endPoint ? console.log('Db connect') : ''
-//   }
-//   catch (error) {
-//     console.log(error)
-//   }
-// }
-
-// dbConnect()
-
-
-app.get('', (req, res) => {
-  res.send('Hello World')
+app.post('/api/users/register', (req, res) => {
+  //we can only do this cuz we enabled body-parser
+  const user = new User(req.body)
+  //info gotten from the client saved in the db
+  user.save((err, userData) => {
+    err ? res.json({ success: false, err }) : ''
+  })
+  return res.status(200).json({ success: true })
 })
-
 
 const PORT = 5000
 
