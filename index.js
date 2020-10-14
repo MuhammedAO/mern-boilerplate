@@ -3,8 +3,10 @@ const app = express()
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
 const { User } = require('./models/User')
+const config = require('./config/key')
 
-mongoose.connect('mongodb+srv://mo:muhammed@cluster0.q9rcm.mongodb.net/<dbname>?retryWrites=true&w=majority', {
+
+mongoose.connect(config.mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true
