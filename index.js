@@ -1,9 +1,9 @@
 const express = require('express')
-const app = express()
-const mongoose = require('mongoose')
-const cookieParser = require('cookie-parser')
-const { User } = require('./models/User')
-const config = require('./config/key')
+  , app = express()
+  , mongoose = require('mongoose')
+  , cookieParser = require('cookie-parser')
+  , { User } = require('./models/User')
+  , config = require('./config/key')
 
 
 mongoose.connect(config.mongoURI, {
@@ -30,6 +30,30 @@ app.post('/api/users/register', (req, res) => {
   })
   return res.status(200).json({ success: true })
 })
+
+
+app.post('/api/user/login', (req, res) => {
+  //find email
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (!user)
+      return res.json({ loginSuccess: false, message: 'Authenticated failed, email not found' })
+
+    //compare passwords
+    user.comparePasswords(req.body.password, (err, isMatch) => {
+      if (!isMatch)
+        return res.json({ loginSuccess: false, message: "You've provided an incorrect password" })
+    })
+    //generate token
+    user.generateToken((err, user) => {
+      if (err) return res.status(400).send(err)
+      res.cookie("x_auth", user.token)
+        .status(200)
+        .json({ loginSuccess: true })
+    })
+
+  })
+})
+
 
 const PORT = 5000
 
