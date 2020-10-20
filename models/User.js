@@ -50,6 +50,7 @@ userSchema.pre('save', function (next) {
       bcrypt.hash(user.password, salt, (err, hash) => {
         if (err) return next(err)
         user.password = hash
+        next()
       })
 
     })
@@ -78,6 +79,19 @@ userSchema.methods.generateToken = function (cb) {
     if (err) return cb(err)
     cb(null, user)
   })
+}
+
+userSchema.statics.findByToken = function (token, cb) {
+  let user = this
+  //verify token with jwt by decoding which returns the user._id (from jwt.sign)
+  //token from our cookie
+  jwt.verify(token, 'secret', function (err, decode) {
+    user.findOne({ "_id": decode, "token": token }, function (err, user) {
+      if (err) return cb(err)
+      cb(null, user)
+    })
+  })
+
 }
 
 const User = mongoose.model('User', userSchema) //name of collection & schema

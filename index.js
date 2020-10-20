@@ -1,9 +1,11 @@
+
 const express = require('express')
   , app = express()
   , mongoose = require('mongoose')
   , cookieParser = require('cookie-parser')
   , { User } = require('./models/User')
   , config = require('./config/key')
+  , { auth } = require('./middleware/auth')
 
 
 mongoose.connect(config.mongoURI, {
@@ -21,14 +23,27 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser())
 
+
+app.get('/api/user/auth', auth, (req, res) => {
+  //send response to client
+  res.status(200).json({
+    _id: req._id,
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    lastName: req.user.lastName,
+    role: req.user.role
+  })
+})
+
 app.post('/api/users/register', (req, res) => {
   //we can only do this cuz we enabled body-parser
   const user = new User(req.body)
   //info gotten from the client saved in the db
-  user.save((err, userData) => {
+  user.save((err, doc) => {
     err ? res.json({ success: false, err }) : ''
+    return res.status(200).json({ success: true, userData: doc })
   })
-  return res.status(200).json({ success: true })
 })
 
 
