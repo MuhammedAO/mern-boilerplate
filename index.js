@@ -11,7 +11,8 @@ const express = require('express')
 mongoose.connect(config.mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false
 })
   .then(() => console.log('Db Connected'))
   .catch((err) => console.log(err))
@@ -69,6 +70,15 @@ app.post('/api/user/login', (req, res) => {
   })
 })
 
+
+
+app.get('/api/user/logout', auth, (req, res) => {
+  //find specific logged in user
+  User.findByIdAndUpdate({ _id: req.user._id }, { token: "" }, (err, doc) => {
+    if (err) return res.json({ success: false, err })
+    return res.status(200).send({ success: true, message: "You're currently logged out" })
+  })
+})
 
 const PORT = 5000
 
