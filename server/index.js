@@ -25,6 +25,10 @@ app.use(express.json())
 app.use(cookieParser())
 
 
+app.get('/', (req,res) => {
+  res.send({message: 'Hello World'})
+})
+
 app.get('/api/user/auth', auth, (req, res) => {
   //send response to client
   res.status(200).json({
