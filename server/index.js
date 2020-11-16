@@ -3,7 +3,7 @@ const express = require('express')
   , mongoose = require('mongoose')
   , cookieParser = require('cookie-parser')
   , config = require('./config/key')
-
+  , cors = require('cors')
 
 mongoose.connect(config.mongoURI, {
   useNewUrlParser: true,
@@ -15,7 +15,7 @@ mongoose.connect(config.mongoURI, {
   .catch((err) => console.log(err))
 
 // add cors
-
+app.use(cors())
 
 // body-parser extract the entire body portion of an incoming request stream and exposes it on req. body.
 //it is a piece of express middleware that reads a form's input and stores it as a javascript object accessible through req.body
